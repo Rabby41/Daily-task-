@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>October 2026 — 5 Area Daily Tracker</title>
+<link rel="icon" href="assets/edunest.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
@@ -59,6 +60,9 @@ h1,h2,h3,.num{font-family:"Space Grotesk","IBM Plex Sans",system-ui,sans-serif}
 .mast-top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
 h1{margin:0;font-size:clamp(22px,4.2vw,31px);font-weight:600;letter-spacing:-.02em;line-height:1.1}
 h1 span{display:block;font-family:"IBM Plex Sans",sans-serif;font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0;margin-top:6px}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.brand img{height:52px;width:auto;max-width:130px;object-fit:contain;border-radius:10px;flex:none}
+@media (max-width:640px){ .brand img{height:42px;max-width:96px} }
 .gauge{display:flex;align-items:center;gap:14px}
 .gauge .fig{text-align:right}
 .gauge .big{font-family:"Space Grotesk",sans-serif;font-size:28px;font-weight:600;line-height:1;letter-spacing:-.02em}
@@ -224,7 +228,10 @@ button.link:hover{color:var(--ink)}
 
   <header class="masthead">
     <div class="mast-top">
-      <h1>October 2026 Tracking<span>Five areas · 30 days · edit anything you see</span></h1>
+      <div class="brand">
+        <img src="assets/edunest.png" alt="Edunest" onerror="this.style.display='none'">
+        <h1>October 2026 Tracking<span>Five areas · 30 days · edit anything you see</span></h1>
+      </div>
       <div class="gauge">
         <svg class="ring" viewBox="0 0 40 40" aria-hidden="true">
           <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
