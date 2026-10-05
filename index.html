@@ -37,6 +37,29 @@
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb = supabase.createClient('https://pduklihckylyxhkhxvcf.supabase.co/rest/v1/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkdWtsaWhja3lseXhoa2h4dmNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTg2OTksImV4cCI6MjEwNjc5NDY5OX0.6Tfm7llAnSz4bcelNbBkE8zpj5rQOGcqSbca3kjgPn4');
+const ROW_ID = 'oct-2026';
+
+async function loadState() {
+  const { data, error } = await sb.from('tracker')
+    .select('data').eq('id', ROW_ID).maybeSingle();
+  if (error) { console.error(error); return null; }
+  return data ? data.data : null;
+}
+
+let timer;
+function saveState(state) {
+  clearTimeout(timer);
+  timer = setTimeout(async () => {
+    const { error } = await sb.from('tracker').upsert({
+      id: ROW_ID, data: state, updated_at: new Date().toISOString()
+    });
+    if (error) console.error(error);
+  }, 500);
+}
+</script>
 body{
   margin:0;background:var(--bg);color:var(--ink);
   font-family:"IBM Plex Sans","Noto Sans Bengali",system-ui,-apple-system,Segoe UI,sans-serif;
