@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>October 2026 — 5 Area Daily Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+Bengali:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F0FB; --surface:#FFFFFF; --surface-2:#F7F4FD;
+  --ink:#181227; --muted:#6B6483; --line:#E1D9F5; --line-soft:#ECE6FA;
+  --a-spoken:#E23A81; --a-digital:#2E6EF2; --a-data:#0FAE84; --a-bank:#7C4DEE; --a-biz:#F0930E;
+  --done:#0FAE84; --doing:#F0930E; --todo:#A79CC7;
+  --shadow:0 2px 4px rgba(60,30,110,.07), 0 14px 30px -16px rgba(60,30,110,.34);
+  --radius:12px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#150F24; --surface:#1E1733; --surface-2:#251C3D;
+    --ink:#F1ECFB; --muted:#A79CC7; --line:#3A2E5C; --line-soft:#2C2249;
+    --a-spoken:#FF6FB0; --a-digital:#7EA7FF; --a-data:#4FE0B6; --a-bank:#B79CFF; --a-biz:#FFC15C;
+    --done:#4FE0B6; --doing:#FFC15C; --todo:#8B7FB0;
+    --shadow:0 2px 4px rgba(0,0,0,.4), 0 14px 30px -16px rgba(0,0,0,.65);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#150F24; --surface:#1E1733; --surface-2:#251C3D;
+  --ink:#F1ECFB; --muted:#A79CC7; --line:#3A2E5C; --line-soft:#2C2249;
+  --a-spoken:#FF6FB0; --a-digital:#7EA7FF; --a-data:#4FE0B6; --a-bank:#B79CFF; --a-biz:#FFC15C;
+  --done:#4FE0B6; --doing:#FFC15C; --todo:#8B7FB0;
+  --shadow:0 2px 4px rgba(0,0,0,.4), 0 14px 30px -16px rgba(0,0,0,.65);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans","Noto Sans Bengali",system-ui,-apple-system,Segoe UI,sans-serif;
+  font-size:15px;line-height:1.5;
+}
+h1,h2,h3,.num{font-family:"Space Grotesk","IBM Plex Sans",system-ui,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px 72px}
+
+/* ---------- masthead ---------- */
+.masthead{
+  padding:28px 20px 18px;margin:0 -16px 4px;border-radius:0 0 22px 22px;
+  background:
+    radial-gradient(120% 160% at 0% 0%, color-mix(in srgb, var(--a-digital) 20%, transparent), transparent 55%),
+    radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--a-spoken) 18%, transparent), transparent 55%),
+    radial-gradient(140% 160% at 50% 120%, color-mix(in srgb, var(--a-data) 14%, transparent), transparent 60%),
+    var(--surface);
+  border:1px solid var(--line);
+}
+@media (min-width:641px){ .masthead{padding-left:26px;padding-right:26px} }
+.mast-top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+h1{margin:0;font-size:clamp(22px,4.2vw,31px);font-weight:600;letter-spacing:-.02em;line-height:1.1}
+h1 span{display:block;font-family:"IBM Plex Sans",sans-serif;font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0;margin-top:6px}
+.gauge{display:flex;align-items:center;gap:14px}
+.gauge .fig{text-align:right}
+.gauge .big{font-family:"Space Grotesk",sans-serif;font-size:28px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.gauge .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.ring{width:58px;height:58px;flex:none;filter:drop-shadow(0 2px 6px color-mix(in srgb, var(--a-digital) 35%, transparent))}
+.ring circle{fill:none;stroke-width:7}
+.ring .bgc{stroke:var(--line)}
+.ring .fgc{stroke:url(#ringGrad);stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.34,1.56,.64,1)}
+
+.bar{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:18px;position:relative}
+.bar i{display:block;height:100%;border-radius:999px;transition:width .5s cubic-bezier(.34,1.2,.64,1);
+  background:linear-gradient(90deg,var(--a-spoken),var(--a-digital),var(--a-data),var(--a-biz));
+  background-size:200% 100%;animation:flow 5s linear infinite}
+@keyframes flow{to{background-position:-200% 0}}
+
+.areabar{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.achip{display:flex;align-items:center;gap:8px;
+  background:color-mix(in srgb, var(--c) 12%, var(--surface));
+  border:1px solid color-mix(in srgb, var(--c) 30%, var(--line));
+  color:var(--c);border-radius:999px;padding:6px 13px 6px 10px;font-size:12.5px;cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease}
+.achip:hover{transform:translateY(-1px);box-shadow:0 4px 12px -4px color-mix(in srgb, var(--c) 50%, transparent)}
+.achip .dot{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none;box-shadow:0 0 0 3px color-mix(in srgb, var(--c) 20%, transparent)}
+.achip b{font-weight:600;font-family:"Space Grotesk",sans-serif;color:var(--ink)}
+.achip.off{opacity:.4;filter:saturate(.4)}
+.achip .mini{width:46px;height:4px;border-radius:999px;background:color-mix(in srgb, var(--c) 18%, var(--line));overflow:hidden}
+.achip .mini i{display:block;height:100%;background:var(--c);transition:width .4s ease}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:2px;margin:20px 0 18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:3px;width:fit-content;max-width:100%;overflow:auto}
+.tabs button{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:14px;padding:8px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:background .15s ease,color .15s ease}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected="true"]{
+  background:linear-gradient(120deg,var(--a-digital),var(--a-bank));color:#fff;font-weight:500;
+  box-shadow:0 3px 10px -3px color-mix(in srgb, var(--a-digital) 55%, transparent)}
+
+/* ---------- day strip ---------- */
+.daystrip{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:thin}
+.daybtn{flex:none;width:46px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:7px 0 6px;cursor:pointer;color:var(--ink);font:inherit;text-align:center;transition:transform .15s ease,box-shadow .15s ease}
+.daybtn:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.daybtn .d{font-family:"Space Grotesk",sans-serif;font-size:15px;font-weight:600;line-height:1}
+.daybtn .pips{display:flex;gap:2px;justify-content:center;margin-top:6px}
+.daybtn .pips i{width:4px;height:4px;border-radius:50%;background:var(--line)}
+.daybtn .pips i.on{background:var(--done)}
+.daybtn .pips i.mid{background:var(--doing)}
+.daybtn[aria-current="true"]{
+  background:linear-gradient(150deg,var(--a-digital),var(--a-bank));border-color:transparent;color:#fff;
+  box-shadow:0 4px 14px -4px color-mix(in srgb, var(--a-bank) 55%, transparent);transform:translateY(-2px)}
+.daybtn[aria-current="true"] .pips i{background:rgba(255,255,255,.32)}
+.daybtn[aria-current="true"] .pips i.on{background:#fff}
+
+.dayhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:8px 0 14px;flex-wrap:wrap}
+.dayhead h2{margin:0;font-size:19px;font-weight:600;letter-spacing:-.01em}
+.dayhead .meta{font-size:13px;color:var(--muted)}
+
+/* ---------- cards ---------- */
+.cards{display:grid;gap:12px}
+.card{
+  background:linear-gradient(180deg, color-mix(in srgb, var(--c) 6%, var(--surface)), var(--surface) 60%);
+  border:1px solid color-mix(in srgb, var(--c) 22%, var(--line));border-left:5px solid var(--c);
+  border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px;
+  transition:transform .18s ease,box-shadow .18s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 4px 8px rgba(60,30,110,.08), 0 20px 34px -18px color-mix(in srgb, var(--c) 45%, transparent)}
+.card.is-done{opacity:.72}
+.card.is-done:hover{opacity:1}
+.card-top{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+.area-name{color:var(--c);font-size:11.5px;font-weight:600;letter-spacing:.04em;font-family:"Space Grotesk",sans-serif}
+.topic{font-family:"Space Grotesk",sans-serif;font-size:17px;font-weight:600;letter-spacing:-.01em;margin-top:3px}
+.fieldrow{display:grid;grid-template-columns:96px 1fr;gap:6px 14px;margin-top:12px;font-size:14px;align-items:start}
+.fieldrow .k{color:var(--muted);font-size:12.5px;padding-top:3px}
+.card-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft)}
+.spacer{flex:1}
+
+/* editable */
+[contenteditable]{outline:none;border-radius:6px;padding:3px 6px;margin:-3px -6px;transition:background .12s}
+[contenteditable]:hover{background:var(--surface-2)}
+[contenteditable]:focus{background:var(--surface-2);box-shadow:inset 0 0 0 1.5px var(--c,var(--ink))}
+[contenteditable]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.65}
+
+.status{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:6px 14px 6px 10px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer;transition:transform .12s ease,background .15s ease,color .15s ease,border-color .15s ease}
+.status:hover{transform:translateY(-1px)}
+.status:active{transform:scale(.96)}
+.status .mark{font-size:14px;line-height:1}
+.status[data-s="done"]{border-color:transparent;background:var(--done);color:#fff;font-weight:500}
+.status[data-s="doing"]{border-color:transparent;background:var(--doing);color:#241300;font-weight:500}
+.hrs{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.hrs input{width:62px;font:inherit;font-family:"Space Grotesk",sans-serif;font-size:14px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:5px 8px;text-align:right;transition:border-color .15s ease}
+.hrs input:focus{outline:none;border-color:var(--a-digital)}
+.icon-btn{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:8px;padding:5px 10px;font:inherit;font-size:12.5px;cursor:pointer;transition:transform .12s ease,color .15s ease,border-color .15s ease}
+.icon-btn:hover{color:var(--ink);border-color:var(--a-digital);transform:translateY(-1px)}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.18)}100%{transform:scale(1)}}
+.pop{animation:pop .32s cubic-bezier(.34,1.56,.64,1)}
+
+/* ---------- table ---------- */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.toolbar input[type=search],.toolbar select{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:7px 10px;transition:border-color .15s ease}
+.toolbar input[type=search]:focus,.toolbar select:focus{outline:none;border-color:var(--a-digital)}
+.toolbar input[type=search]{min-width:200px;flex:1}
+.tablewrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:900px;font-size:13.5px}
+thead th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:12px;color:var(--muted);padding:11px 10px;border-bottom:2px solid var(--line);z-index:2;white-space:nowrap}
+tbody td{border-bottom:1px solid var(--line-soft);padding:9px 10px;vertical-align:top;transition:background .12s ease}
+tbody tr:hover td{background:var(--surface-2)}
+tbody tr.done td:nth-child(n+3):nth-child(-n+5){color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+td.c-day{font-family:"Space Grotesk",sans-serif;font-weight:600;width:44px}
+td.c-area{width:130px}
+td.c-area .tag{display:inline-flex;align-items:center;gap:6px;color:var(--c);font-size:12px;font-weight:600;
+  background:color-mix(in srgb, var(--c) 12%, transparent);padding:3px 9px 3px 7px;border-radius:999px}
+td.c-area .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c);flex:none}
+td.c-h{width:78px}
+td.c-h input{width:56px;font:inherit;font-family:"Space Grotesk",sans-serif;text-align:right;background:transparent;border:1px solid transparent;border-radius:6px;padding:3px 6px;color:var(--ink)}
+td.c-h input:hover{background:var(--surface-2)}
+td.c-h input:focus{outline:none;background:var(--surface-2);border-color:var(--line)}
+td.c-s{width:56px;text-align:center}
+.tick{border:0;background:transparent;font-size:19px;line-height:1;cursor:pointer;padding:3px 5px;color:var(--todo);border-radius:7px;transition:transform .12s ease,background .12s ease}
+.tick:hover{background:var(--line-soft);transform:scale(1.1)}
+.tick[data-s="done"]{color:var(--done)}
+.tick[data-s="doing"]{color:var(--doing)}
+td.c-x{width:34px}
+.del{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:15px;line-height:1;padding:2px 5px;border-radius:6px;opacity:0}
+tr:hover .del{opacity:1}
+.del:hover{color:#D03A3A;background:var(--surface-2)}
+
+/* ---------- plan ---------- */
+.plan{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.pcard{
+  background:linear-gradient(180deg, color-mix(in srgb, var(--c) 8%, var(--surface)), var(--surface) 55%);
+  border:1px solid color-mix(in srgb, var(--c) 24%, var(--line));border-top:4px solid var(--c);
+  border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);
+  transition:transform .18s ease,box-shadow .18s ease}
+.pcard:hover{transform:translateY(-3px);box-shadow:0 4px 8px rgba(60,30,110,.08), 0 20px 34px -18px color-mix(in srgb, var(--c) 45%, transparent)}
+.pcard h3{margin:0;font-size:16px;font-weight:600;color:var(--c);letter-spacing:-.01em}
+.pcard .prio{display:inline-block;font-size:11.5px;color:var(--c);background:color-mix(in srgb, var(--c) 14%, transparent);border-radius:999px;padding:3px 10px;margin-top:8px;font-weight:500}
+.pcard dl{margin:12px 0 0;display:grid;gap:8px}
+.pcard dt{font-size:11.5px;color:var(--muted)}
+.pcard dd{margin:2px 0 0;font-size:14px}
+
+/* ---------- footer bar ---------- */
+.footer{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:26px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.saved{display:inline-flex;align-items:center;gap:7px}
+.saved .led{width:7px;height:7px;border-radius:50%;background:var(--done);transition:background .3s}
+.saved.pending .led{background:var(--doing)}
+.saved.off .led{background:var(--todo)}
+button.link{border:0;background:none;color:var(--muted);font:inherit;font-size:12.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
+button.link:hover{color:var(--ink)}
+.empty{padding:34px 16px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius)}
+.confetto{position:fixed;width:6px;height:9px;border-radius:1px;pointer-events:none;z-index:999;top:0;left:0;
+  animation:confetti-burst .85s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes confetti-burst{
+  to{ transform:translate(var(--dx),var(--dy)) rotate(var(--r)); opacity:0 }
+}
+:focus-visible{outline:2px solid var(--a-digital);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:640px){
+  .fieldrow{grid-template-columns:1fr;gap:2px}
+  .fieldrow .k{padding-top:8px}
+  .gauge .big{font-size:23px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="mast-top">
+      <h1>October 2026 Tracking<span>Five areas · 30 days · edit anything you see</span></h1>
+      <div class="gauge">
+        <svg class="ring" viewBox="0 0 40 40" aria-hidden="true">
+          <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="var(--a-digital)"></stop>
+            <stop offset="55%" stop-color="var(--a-data)"></stop>
+            <stop offset="100%" stop-color="var(--a-spoken)"></stop>
+          </linearGradient></defs>
+          <circle class="bgc" cx="20" cy="20" r="16"></circle>
+          <circle class="fgc" id="ring" cx="20" cy="20" r="16" transform="rotate(-90 20 20)" stroke-dasharray="100.5" stroke-dashoffset="100.5"></circle>
+        </svg>
+        <div class="fig">
+          <div class="big num" id="pct">0%</div>
+          <div class="sub" id="stat">0 of 150 tasks · 0 / 240 h</div>
+        </div>
+      </div>
+    </div>
+    <div class="bar"><i id="bar" style="width:0%"></i></div>
+    <div class="areabar" id="areabar"></div>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-day" aria-selected="true">Day view</button>
+    <button role="tab" id="tab-month" aria-selected="false">Full month</button>
+    <button role="tab" id="tab-plan" aria-selected="false">Monthly plan</button>
+  </nav>
+
+  <section id="view-day">
+    <div class="daystrip" id="daystrip"></div>
+    <div class="dayhead">
+      <h2 id="dayTitle">Day 1</h2>
+      <div class="meta" id="dayMeta"></div>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="footer" style="border:0;padding-top:12px;margin-top:12px">
+      <button class="icon-btn" id="addDay">Add a task to this day</button>
+    </div>
+  </section>
+
+  <section id="view-month" hidden>
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="Search topic, task or notes">
+      <select id="fArea"><option value="">All areas</option></select>
+      <select id="fStatus">
+        <option value="">Any status</option>
+        <option value="todo">Not started</option>
+        <option value="doing">In progress</option>
+        <option value="done">Done</option>
+      </select>
+      <button class="icon-btn" id="addRow">Add row</button>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr>
+          <th>Day</th><th>Area</th><th>Topic</th><th>Task</th><th>Expected output</th>
+          <th>Hours</th><th>Done</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p id="noRows" class="empty" hidden>Nothing matches these filters. Clear the search or pick another area.</p>
+  </section>
+
+  <section id="view-plan" hidden>
+    <div class="plan" id="plan"></div>
+    <div class="footer" style="border:0;padding-top:16px;margin-top:8px">
+      <button class="icon-btn" id="addPlan">Add an area</button>
+    </div>
+  </section>
+
+  <div class="footer">
+    <span class="saved" id="saved"><i class="led"></i><span id="savedText">Saved</span></span>
+    <span class="spacer" style="flex:1"></span>
+    <button class="link" id="themeBtn">Switch theme</button>
+    <button class="link" id="csvBtn" hidden>Download CSV</button>
+    <button class="link" id="resetBtn">Reset to the original sheet</button>
+  </div>
+</div>
+
+<script>
+const SEED = {"rows":[{"day":1,"area":"Spoken English","topic":"Baseline + self introduction","task":"Record 2-min self introduction; note 5 weaknesses","output":"2-min recording","status":"todo","hours":1.5,"notes":"","id":"r000"},{"day":1,"area":"Digital Marketing","topic":"Digital marketing fundamentals","task":"Learn channels, funnel, KPI, organic vs paid","output":"1-page notes","status":"todo","hours":3.0,"notes":"","id":"r001"},{"day":1,"area":"Data Analyst","topic":"Excel interface + data types","task":"Practice cells, formatting, sorting/filtering","output":"Sample dataset cleaned","status":"todo","hours":1.5,"notes":"","id":"r002"},{"day":1,"area":"Bank Preparation","topic":"Computer Fundamentals: hardware/software","task":"Study CPU, RAM, storage, input/output","output":"20 MCQs","status":"todo","hours":1.0,"notes":"","id":"r003"},{"day":1,"area":"Business Growth","topic":"Business model basics","task":"Define problem, customer, value proposition","output":"1-page business model","status":"todo","hours":1.0,"notes":"","id":"r004"},{"day":2,"area":"Spoken English","topic":"Sentence structure + present tense","task":"Make 30 daily-life sentences and speak them","output":"30 spoken sentences","status":"todo","hours":1.5,"notes":"","id":"r005"},{"day":2,"area":"Digital Marketing","topic":"Customer journey + marketing funnel","task":"Map awareness→consideration→conversion","output":"Funnel diagram","status":"todo","hours":3.0,"notes":"","id":"r006"},{"day":2,"area":"Data Analyst","topic":"Excel formulas: SUM, AVERAGE, COUNT, IF","task":"Practice on sales dataset","output":"20 formula exercises","status":"todo","hours":1.5,"notes":"","id":"r007"},{"day":2,"area":"Bank Preparation","topic":"Number systems + basic computer concepts","task":"Binary/decimal conversion + MCQs","output":"25 MCQs","status":"todo","hours":1.0,"notes":"","id":"r008"},{"day":2,"area":"Business Growth","topic":"Target customer / ICP","task":"Define age, location, pain point, budget","output":"ICP sheet","status":"todo","hours":1.0,"notes":"","id":"r009"},{"day":3,"area":"Spoken English","topic":"Past & future tense","task":"Talk about yesterday and tomorrow for 3 minutes","output":"3-min recording","status":"todo","hours":1.5,"notes":"","id":"r010"},{"day":3,"area":"Digital Marketing","topic":"Meta ecosystem + Business Manager","task":"Learn Page, Ad Account, Pixel, Events","output":"Account structure notes","status":"todo","hours":3.0,"notes":"","id":"r011"},{"day":3,"area":"Data Analyst","topic":"Excel sorting, filtering, tables","task":"Clean a messy dataset","output":"Cleaned Excel file","status":"todo","hours":1.5,"notes":"","id":"r012"},{"day":3,"area":"Bank Preparation","topic":"Operating System basics","task":"Process, memory, file system, OS types","output":"25 MCQs","status":"todo","hours":1.0,"notes":"","id":"r013"},{"day":3,"area":"Business Growth","topic":"Competitor research","task":"Analyze 5 competitors","output":"Competitor matrix","status":"todo","hours":1.0,"notes":"","id":"r014"},{"day":4,"area":"Spoken English","topic":"Question formation + conversation","task":"Practice 30 Q&A pairs","output":"Conversation recording","status":"todo","hours":1.5,"notes":"","id":"r015"},{"day":4,"area":"Digital Marketing","topic":"Meta Ads campaign objectives","task":"Learn awareness, traffic, engagement, leads, sales","output":"Objective comparison sheet","status":"todo","hours":3.0,"notes":"","id":"r016"},{"day":4,"area":"Data Analyst","topic":"Excel IF, AND, OR, COUNTIF/SUMIF","task":"Solve business scenarios","output":"20 exercises","status":"todo","hours":1.5,"notes":"","id":"r017"},{"day":4,"area":"Bank Preparation","topic":"DBMS basics","task":"DBMS, table, key, SQL concept, normalization","output":"25 MCQs","status":"todo","hours":1.0,"notes":"","id":"r018"},{"day":4,"area":"Business Growth","topic":"Offer + pricing","task":"Create 3 offers and pricing logic","output":"Offer sheet","status":"todo","hours":1.0,"notes":"","id":"r019"},{"day":5,"area":"Spoken English","topic":"Vocabulary for work","task":"Learn 30 workplace words; use in sentences","output":"30 sentences","status":"todo","hours":1.5,"notes":"","id":"r020"},{"day":5,"area":"Digital Marketing","topic":"Meta audience targeting","task":"Custom, lookalike, interests, demographics","output":"Audience plan","status":"todo","hours":3.0,"notes":"","id":"r021"},{"day":5,"area":"Data Analyst","topic":"XLOOKUP/VLOOKUP + INDEX/MATCH","task":"Practice joining two sheets","output":"20 exercises","status":"todo","hours":1.5,"notes":"","id":"r022"},{"day":5,"area":"Bank Preparation","topic":"Networking basics","task":"LAN/WAN, IP, DNS, HTTP/HTTPS, router","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r023"},{"day":5,"area":"Business Growth","topic":"Sales funnel","task":"Map lead→contact→demo→sale→retention","output":"Sales funnel","status":"todo","hours":1.0,"notes":"","id":"r024"},{"day":6,"area":"Spoken English","topic":"Listening practice","task":"Watch 20–30 min English content; summarize orally","output":"2-min summary","status":"todo","hours":1.5,"notes":"","id":"r025"},{"day":6,"area":"Digital Marketing","topic":"Meta creatives + copywriting","task":"Create 3 ad copies and 3 creative concepts","output":"Ad copy set","status":"todo","hours":3.0,"notes":"","id":"r026"},{"day":6,"area":"Data Analyst","topic":"Pivot Tables","task":"Analyze sales/customer dataset","output":"1 Pivot report","status":"todo","hours":1.5,"notes":"","id":"r027"},{"day":6,"area":"Bank Preparation","topic":"Internet + web basics","task":"Study browser, URL, domain, hosting, cloud","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r028"},{"day":6,"area":"Business Growth","topic":"Lead generation","task":"Design 3 lead-generation methods","output":"Lead plan","status":"todo","hours":1.0,"notes":"","id":"r029"},{"day":7,"area":"Spoken English","topic":"Weekly review","task":"Repeat Day 1 recording; compare progress","output":"Before/after notes","status":"todo","hours":1.5,"notes":"","id":"r030"},{"day":7,"area":"Digital Marketing","topic":"Week 1 review + mini campaign","task":"Plan a complete Meta campaign","output":"Campaign brief","status":"todo","hours":3.0,"notes":"","id":"r031"},{"day":7,"area":"Data Analyst","topic":"Excel mini project","task":"Create sales summary using formulas + Pivot","output":"Mini dashboard","status":"todo","hours":1.5,"notes":"","id":"r032"},{"day":7,"area":"Bank Preparation","topic":"Week 1 revision","task":"Review Days 1–6 + 50 MCQs","output":"Score ≥70% target","status":"todo","hours":1.0,"notes":"","id":"r033"},{"day":7,"area":"Business Growth","topic":"Week 1 review","task":"Review customer, offer, funnel","output":"1-page strategy","status":"todo","hours":1.0,"notes":"","id":"r034"},{"day":8,"area":"Spoken English","topic":"Present perfect + common mistakes","task":"Practice 30 examples","output":"Recording","status":"todo","hours":1.5,"notes":"","id":"r035"},{"day":8,"area":"Digital Marketing","topic":"Meta Ads campaign setup","task":"Learn campaign/ad set/ad structure","output":"Mock campaign","status":"todo","hours":3.0,"notes":"","id":"r036"},{"day":8,"area":"Data Analyst","topic":"Charts + conditional formatting","task":"Create 5 business charts","output":"Chart sheet","status":"todo","hours":1.5,"notes":"","id":"r037"},{"day":8,"area":"Bank Preparation","topic":"Networking: TCP/IP + OSI","task":"Learn layers and protocols","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r038"},{"day":8,"area":"Business Growth","topic":"Landing page basics","task":"Study headline, CTA, proof, offer","output":"Landing page wireframe","status":"todo","hours":1.0,"notes":"","id":"r039"},{"day":9,"area":"Spoken English","topic":"Prepositions + articles","task":"Practice common errors","output":"30 corrections","status":"todo","hours":1.5,"notes":"","id":"r040"},{"day":9,"area":"Digital Marketing","topic":"Meta Ads budget + bidding","task":"Learn daily/lifetime budget, bid basics","output":"Budget plan","status":"todo","hours":3.0,"notes":"","id":"r041"},{"day":9,"area":"Data Analyst","topic":"Power Query basics","task":"Import, clean, transform data","output":"Cleaned dataset","status":"todo","hours":1.5,"notes":"","id":"r042"},{"day":9,"area":"Bank Preparation","topic":"DBMS keys + normalization","task":"Primary/foreign/candidate keys","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r043"},{"day":9,"area":"Business Growth","topic":"Content strategy","task":"Create 7-day content calendar","output":"Content calendar","status":"todo","hours":1.0,"notes":"","id":"r044"},{"day":10,"area":"Spoken English","topic":"Pronunciation + shadowing","task":"Shadow 10 minutes of native speech","output":"10-min practice","status":"todo","hours":1.5,"notes":"","id":"r045"},{"day":10,"area":"Digital Marketing","topic":"Meta Pixel/Conversions","task":"Learn events, conversions, tracking concepts","output":"Tracking notes","status":"todo","hours":3.0,"notes":"","id":"r046"},{"day":10,"area":"Data Analyst","topic":"Power Query transformations","task":"Merge, append, remove duplicates","output":"Transformation file","status":"todo","hours":1.5,"notes":"","id":"r047"},{"day":10,"area":"Bank Preparation","topic":"Programming fundamentals","task":"Variable, loop, function, array","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r048"},{"day":10,"area":"Business Growth","topic":"Email/WhatsApp lead follow-up","task":"Create follow-up sequence","output":"5-message sequence","status":"todo","hours":1.0,"notes":"","id":"r049"},{"day":11,"area":"Spoken English","topic":"Business conversation","task":"Practice meeting, phone, client scenarios","output":"Role-play recording","status":"todo","hours":1.5,"notes":"","id":"r050"},{"day":11,"area":"Digital Marketing","topic":"Google Ads fundamentals","task":"Search ads, keywords, match types","output":"Keyword list","status":"todo","hours":3.0,"notes":"","id":"r051"},{"day":11,"area":"Data Analyst","topic":"Power BI introduction","task":"Import data, fields, basic visuals","output":"First report","status":"todo","hours":1.5,"notes":"","id":"r052"},{"day":11,"area":"Bank Preparation","topic":"Data structures basics","task":"Array, stack, queue, tree concepts","output":"25 MCQs","status":"todo","hours":1.0,"notes":"","id":"r053"},{"day":11,"area":"Business Growth","topic":"Customer retention","task":"Design onboarding + follow-up","output":"Retention flow","status":"todo","hours":1.0,"notes":"","id":"r054"},{"day":12,"area":"Spoken English","topic":"Storytelling","task":"Tell a 5-min personal/work story","output":"5-min recording","status":"todo","hours":1.5,"notes":"","id":"r055"},{"day":12,"area":"Digital Marketing","topic":"Google Ads keywords","task":"Keyword research, intent, negative keywords","output":"Keyword sheet","status":"todo","hours":3.0,"notes":"","id":"r056"},{"day":12,"area":"Data Analyst","topic":"Power BI data model","task":"Relationships, dimensions, facts","output":"Model diagram","status":"todo","hours":1.5,"notes":"","id":"r057"},{"day":12,"area":"Bank Preparation","topic":"Software engineering basics","task":"SDLC, Agile, testing basics","output":"25 MCQs","status":"todo","hours":1.0,"notes":"","id":"r058"},{"day":12,"area":"Business Growth","topic":"Basic finance","task":"Revenue, cost, profit, CAC, LTV","output":"Unit economics sheet","status":"todo","hours":1.0,"notes":"","id":"r059"},{"day":13,"area":"Spoken English","topic":"Presentation skills","task":"Prepare 5-slide presentation and deliver","output":"5-min presentation","status":"todo","hours":1.5,"notes":"","id":"r060"},{"day":13,"area":"Digital Marketing","topic":"Google Ads campaign structure","task":"Build mock search campaign","output":"Campaign structure","status":"todo","hours":3.0,"notes":"","id":"r061"},{"day":13,"area":"Data Analyst","topic":"DAX basics","task":"Learn SUM, CALCULATE, DIVIDE","output":"10 DAX exercises","status":"todo","hours":1.5,"notes":"","id":"r062"},{"day":13,"area":"Bank Preparation","topic":"Cybersecurity basics","task":"CIA, authentication, malware, phishing","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r063"},{"day":13,"area":"Business Growth","topic":"Competitor offer analysis","task":"Compare 5 offers and gaps","output":"Offer comparison","status":"todo","hours":1.0,"notes":"","id":"r064"},{"day":14,"area":"Spoken English","topic":"Week 2 review","task":"Speaking test: 5 minutes without script","output":"Score self-review","status":"todo","hours":1.5,"notes":"","id":"r065"},{"day":14,"area":"Digital Marketing","topic":"Meta + Google review","task":"Compare platforms and use cases","output":"Comparison sheet","status":"todo","hours":3.0,"notes":"","id":"r066"},{"day":14,"area":"Data Analyst","topic":"Power BI mini dashboard","task":"Create KPI cards + charts","output":"Dashboard v1","status":"todo","hours":1.5,"notes":"","id":"r067"},{"day":14,"area":"Bank Preparation","topic":"Week 2 mock test","task":"100 MCQs + review mistakes","output":"Score + error log","status":"todo","hours":1.0,"notes":"","id":"r068"},{"day":14,"area":"Business Growth","topic":"Week 2 review","task":"Update business strategy","output":"Strategy v2","status":"todo","hours":1.0,"notes":"","id":"r069"},{"day":15,"area":"Spoken English","topic":"Advanced vocabulary + collocations","task":"Learn 25 phrases; use in speech","output":"25 examples","status":"todo","hours":1.5,"notes":"","id":"r070"},{"day":15,"area":"Digital Marketing","topic":"GA4 fundamentals","task":"Users, sessions, events, conversions, reports","output":"GA4 notes","status":"todo","hours":3.0,"notes":"","id":"r071"},{"day":15,"area":"Data Analyst","topic":"SQL SELECT + WHERE","task":"Practice 30 queries","output":"SQL file","status":"todo","hours":1.5,"notes":"","id":"r072"},{"day":15,"area":"Bank Preparation","topic":"Networking advanced","task":"Subnet basics, ports, DNS, DHCP","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r073"},{"day":15,"area":"Business Growth","topic":"Market sizing","task":"Estimate TAM/SAM/SOM for your business","output":"Market size sheet","status":"todo","hours":1.0,"notes":"","id":"r074"},{"day":16,"area":"Spoken English","topic":"Conditional sentences","task":"Practice real/imagined situations","output":"30 sentences","status":"todo","hours":1.5,"notes":"","id":"r075"},{"day":16,"area":"Digital Marketing","topic":"GA4 events + conversions","task":"Understand event tracking and conversion setup","output":"Event map","status":"todo","hours":3.0,"notes":"","id":"r076"},{"day":16,"area":"Data Analyst","topic":"SQL ORDER BY, GROUP BY","task":"Practice aggregation queries","output":"30 queries","status":"todo","hours":1.5,"notes":"","id":"r077"},{"day":16,"area":"Bank Preparation","topic":"DBMS SQL concepts","task":"SELECT, JOIN, GROUP BY concepts","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r078"},{"day":16,"area":"Business Growth","topic":"Brand positioning","task":"Define audience, promise, differentiation","output":"Positioning statement","status":"todo","hours":1.0,"notes":"","id":"r079"},{"day":17,"area":"Spoken English","topic":"Interview English","task":"Practice 20 common interview questions","output":"Mock interview","status":"todo","hours":1.5,"notes":"","id":"r080"},{"day":17,"area":"Digital Marketing","topic":"GTM fundamentals","task":"Tags, triggers, variables","output":"Tracking map","status":"todo","hours":3.0,"notes":"","id":"r081"},{"day":17,"area":"Data Analyst","topic":"SQL JOINs","task":"INNER, LEFT, RIGHT joins","output":"30 queries","status":"todo","hours":1.5,"notes":"","id":"r082"},{"day":17,"area":"Bank Preparation","topic":"Operating systems revision","task":"Process, threads, scheduling, memory","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r083"},{"day":17,"area":"Business Growth","topic":"Sales script","task":"Create discovery + closing script","output":"Sales script","status":"todo","hours":1.0,"notes":"","id":"r084"},{"day":18,"area":"Spoken English","topic":"Fluency day","task":"Speak 10 minutes on random topics","output":"10-min recording","status":"todo","hours":1.5,"notes":"","id":"r085"},{"day":18,"area":"Digital Marketing","topic":"GTM practice","task":"Create mock GA4/GTM implementation plan","output":"Tracking plan","status":"todo","hours":3.0,"notes":"","id":"r086"},{"day":18,"area":"Data Analyst","topic":"SQL subqueries + CASE","task":"Practice business problems","output":"20 queries","status":"todo","hours":1.5,"notes":"","id":"r087"},{"day":18,"area":"Bank Preparation","topic":"Computer architecture","task":"CPU, cache, registers, buses","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r088"},{"day":18,"area":"Business Growth","topic":"Customer feedback","task":"Create 10 feedback questions","output":"Feedback form","status":"todo","hours":1.0,"notes":"","id":"r089"},{"day":19,"area":"Spoken English","topic":"Professional email/chat","task":"Write 5 work messages and read aloud","output":"5 polished messages","status":"todo","hours":1.5,"notes":"","id":"r090"},{"day":19,"area":"Digital Marketing","topic":"Looker Studio basics","task":"Connect data, scorecards, charts","output":"Report v1","status":"todo","hours":3.0,"notes":"","id":"r091"},{"day":19,"area":"Data Analyst","topic":"SQL mini project","task":"Analyze sales/customer database","output":"SQL analysis","status":"todo","hours":1.5,"notes":"","id":"r092"},{"day":19,"area":"Bank Preparation","topic":"ICT + internet security","task":"Encryption, SSL, backup, privacy","output":"30 MCQs","status":"todo","hours":1.0,"notes":"","id":"r093"},{"day":19,"area":"Business Growth","topic":"Operations workflow","task":"Map lead-to-service delivery process","output":"Workflow diagram","status":"todo","hours":1.0,"notes":"","id":"r094"},{"day":20,"area":"Spoken English","topic":"Debate/discussion","task":"Speak for/against 3 simple topics","output":"3 recordings","status":"todo","hours":1.5,"notes":"","id":"r095"},{"day":20,"area":"Digital Marketing","topic":"Marketing analytics KPIs","task":"CTR, CPC, CPM, CPA, ROAS, CVR","output":"KPI cheat sheet","status":"todo","hours":3.0,"notes":"","id":"r096"},{"day":20,"area":"Data Analyst","topic":"Power BI DAX practice","task":"CALCULATE, FILTER, time concepts","output":"15 exercises","status":"todo","hours":1.5,"notes":"","id":"r097"},{"day":20,"area":"Bank Preparation","topic":"Bank IT mixed MCQ","task":"Solve 50 mixed questions","output":"Score + errors","status":"todo","hours":1.0,"notes":"","id":"r098"},{"day":20,"area":"Business Growth","topic":"Business metrics","task":"Define leads, conversion, revenue, retention KPIs","output":"KPI sheet","status":"todo","hours":1.0,"notes":"","id":"r099"},{"day":21,"area":"Spoken English","topic":"Week 3 review","task":"10-min presentation + feedback","output":"Recording + notes","status":"todo","hours":1.5,"notes":"","id":"r100"},{"day":21,"area":"Digital Marketing","topic":"Week 3 integration","task":"Plan tracking from ad→website→lead","output":"Measurement plan","status":"todo","hours":3.0,"notes":"","id":"r101"},{"day":21,"area":"Data Analyst","topic":"Dashboard project v2","task":"Improve visuals and insights","output":"Dashboard v2","status":"todo","hours":1.5,"notes":"","id":"r102"},{"day":21,"area":"Bank Preparation","topic":"Mock test","task":"100 MCQs","output":"Score + error log","status":"todo","hours":1.0,"notes":"","id":"r103"},{"day":21,"area":"Business Growth","topic":"Weekly review","task":"Evaluate business assumptions","output":"Updated plan","status":"todo","hours":1.0,"notes":"","id":"r104"},{"day":22,"area":"Spoken English","topic":"Weakness correction","task":"Review recordings; fix top 5 issues","output":"Correction log","status":"todo","hours":1.5,"notes":"","id":"r105"},{"day":22,"area":"Digital Marketing","topic":"Campaign project: research","task":"Choose product, audience, objective","output":"Campaign brief","status":"todo","hours":3.0,"notes":"","id":"r106"},{"day":22,"area":"Data Analyst","topic":"Excel + SQL integration","task":"Use SQL output in Excel analysis","output":"Analysis sheet","status":"todo","hours":1.5,"notes":"","id":"r107"},{"day":22,"area":"Bank Preparation","topic":"Computer Fundamentals full revision","task":"Revise all fundamentals","output":"50 MCQs","status":"todo","hours":1.0,"notes":"","id":"r108"},{"day":22,"area":"Business Growth","topic":"Acquisition experiment","task":"Design one low-budget test","output":"Experiment plan","status":"todo","hours":1.0,"notes":"","id":"r109"},{"day":23,"area":"Spoken English","topic":"Advanced listening","task":"Listen to 30 min content and summarize","output":"5-min summary","status":"todo","hours":1.5,"notes":"","id":"r110"},{"day":23,"area":"Digital Marketing","topic":"Campaign project: creatives","task":"Create copy, creative brief, CTA","output":"3 ad variants","status":"todo","hours":3.0,"notes":"","id":"r111"},{"day":23,"area":"Data Analyst","topic":"Power BI project: data model","task":"Build final model","output":"Model + measures","status":"todo","hours":1.5,"notes":"","id":"r112"},{"day":23,"area":"Bank Preparation","topic":"Networking full revision","task":"Revise major protocols/concepts","output":"50 MCQs","status":"todo","hours":1.0,"notes":"","id":"r113"},{"day":23,"area":"Business Growth","topic":"Landing page + funnel","task":"Draft complete landing page copy","output":"Landing page copy","status":"todo","hours":1.0,"notes":"","id":"r114"},{"day":24,"area":"Spoken English","topic":"Presentation + Q&A","task":"Present 7 min and answer 10 questions","output":"Video recording","status":"todo","hours":1.5,"notes":"","id":"r115"},{"day":24,"area":"Digital Marketing","topic":"Campaign project: setup simulation","task":"Build mock campaign structure","output":"Campaign setup","status":"todo","hours":3.0,"notes":"","id":"r116"},{"day":24,"area":"Data Analyst","topic":"Dashboard storytelling","task":"Write 10 insights from dashboard","output":"Insight report","status":"todo","hours":1.5,"notes":"","id":"r117"},{"day":24,"area":"Bank Preparation","topic":"DBMS + SQL revision","task":"50 MCQs + error review","output":"Score + errors","status":"todo","hours":1.0,"notes":"","id":"r118"},{"day":24,"area":"Business Growth","topic":"Sales practice","task":"Role-play 5 customer objections","output":"Objection sheet","status":"todo","hours":1.0,"notes":"","id":"r119"},{"day":25,"area":"Spoken English","topic":"Fluency challenge","task":"Speak 15 min with minimal pauses","output":"15-min recording","status":"todo","hours":1.5,"notes":"","id":"r120"},{"day":25,"area":"Digital Marketing","topic":"Campaign optimization","task":"Learn CTR/CPC/CPA/ROAS diagnosis","output":"Optimization checklist","status":"todo","hours":3.0,"notes":"","id":"r121"},{"day":25,"area":"Data Analyst","topic":"Portfolio project finalization","task":"Clean, document, publish-ready project","output":"Project README","status":"todo","hours":1.5,"notes":"","id":"r122"},{"day":25,"area":"Bank Preparation","topic":"Programming + ICT revision","task":"50 MCQs","output":"Score + errors","status":"todo","hours":1.0,"notes":"","id":"r123"},{"day":25,"area":"Business Growth","topic":"Financial plan","task":"Estimate monthly revenue/cost/profit","output":"12-month sheet","status":"todo","hours":1.0,"notes":"","id":"r124"},{"day":26,"area":"Spoken English","topic":"Mock interview","task":"Complete 20-question mock interview","output":"Video + feedback","status":"todo","hours":1.5,"notes":"","id":"r125"},{"day":26,"area":"Digital Marketing","topic":"Client reporting","task":"Create monthly marketing report","output":"Report template","status":"todo","hours":3.0,"notes":"","id":"r126"},{"day":26,"area":"Data Analyst","topic":"Portfolio project presentation","task":"Explain project in 5 minutes","output":"Project presentation","status":"todo","hours":1.5,"notes":"","id":"r127"},{"day":26,"area":"Bank Preparation","topic":"Full IT mock","task":"100 mixed MCQs","output":"Score + error log","status":"todo","hours":1.0,"notes":"","id":"r128"},{"day":26,"area":"Business Growth","topic":"Business pitch","task":"Create 5-min business pitch","output":"Pitch deck","status":"todo","hours":1.0,"notes":"","id":"r129"},{"day":27,"area":"Spoken English","topic":"Real-life communication","task":"Practice call, meeting, negotiation","output":"3 role plays","status":"todo","hours":1.5,"notes":"","id":"r130"},{"day":27,"area":"Digital Marketing","topic":"Freelancing/client workflow","task":"Brief→proposal→campaign→report→retainer","output":"Workflow","status":"todo","hours":3.0,"notes":"","id":"r131"},{"day":27,"area":"Data Analyst","topic":"Interview basics","task":"Practice 30 Excel/SQL/BI questions","output":"Q&A sheet","status":"todo","hours":1.5,"notes":"","id":"r132"},{"day":27,"area":"Bank Preparation","topic":"Weak-topic revision","task":"Review error log","output":"50 targeted MCQs","status":"todo","hours":1.0,"notes":"","id":"r133"},{"day":27,"area":"Business Growth","topic":"Business automation ideas","task":"Forms, Sheets, email, CRM workflow","output":"Automation map","status":"todo","hours":1.0,"notes":"","id":"r134"},{"day":28,"area":"Spoken English","topic":"Monthly speaking test","task":"10-min unscripted conversation","output":"Final recording","status":"todo","hours":1.5,"notes":"","id":"r135"},{"day":28,"area":"Digital Marketing","topic":"Complete case study","task":"Document campaign, funnel, KPIs and lessons","output":"Case study","status":"todo","hours":3.0,"notes":"","id":"r136"},{"day":28,"area":"Data Analyst","topic":"Complete portfolio case study","task":"Finalize dashboard + insights","output":"Case study","status":"todo","hours":1.5,"notes":"","id":"r137"},{"day":28,"area":"Bank Preparation","topic":"Full mock test","task":"100 MCQs under time limit","output":"Score","status":"todo","hours":1.0,"notes":"","id":"r138"},{"day":28,"area":"Business Growth","topic":"Business case study","task":"Document strategy + metrics","output":"Business plan v1","status":"todo","hours":1.0,"notes":"","id":"r139"},{"day":29,"area":"Spoken English","topic":"Revision + vocabulary test","task":"Review 200+ words/phrases learned","output":"Vocabulary score","status":"todo","hours":1.5,"notes":"","id":"r140"},{"day":29,"area":"Digital Marketing","topic":"Portfolio day","task":"Organize ads, analytics, report, case study","output":"Portfolio folder","status":"todo","hours":3.0,"notes":"","id":"r141"},{"day":29,"area":"Data Analyst","topic":"Portfolio + CV alignment","task":"Write project bullets and skills","output":"CV project section","status":"todo","hours":1.5,"notes":"","id":"r142"},{"day":29,"area":"Bank Preparation","topic":"Final October revision","task":"100 mixed MCQs + error review","output":"Score + weak list","status":"todo","hours":1.0,"notes":"","id":"r143"},{"day":29,"area":"Business Growth","topic":"November growth plan","task":"Set 3 measurable business goals","output":"November plan","status":"todo","hours":1.0,"notes":"","id":"r144"},{"day":30,"area":"Spoken English","topic":"Final assessment","task":"Compare Day 1 vs Day 30 recordings","output":"Progress score","status":"todo","hours":1.5,"notes":"","id":"r145"},{"day":30,"area":"Digital Marketing","topic":"Final assessment","task":"Explain full campaign + analytics workflow","output":"10-min presentation","status":"todo","hours":3.0,"notes":"","id":"r146"},{"day":30,"area":"Data Analyst","topic":"Final assessment","task":"Explain Excel/SQL/Power BI project","output":"5-min presentation","status":"todo","hours":1.5,"notes":"","id":"r147"},{"day":30,"area":"Bank Preparation","topic":"October assessment","task":"100 MCQs + analyze errors","output":"Final score","status":"todo","hours":1.0,"notes":"","id":"r148"},{"day":30,"area":"Business Growth","topic":"October review","task":"Review KPIs, lessons, next steps","output":"November strategy","status":"todo","hours":1.0,"notes":"","id":"r149"}],"plan":[{"area":"Spoken English","priority":"Major","focus":"45–60 min/day + practice","goal":"Fluency + workplace communication","id":"p0"},{"area":"Digital Marketing","priority":"Major","focus":"3–4 h/day","goal":"Portfolio + practical campaign","id":"p1"},{"area":"Data Analyst","priority":"Minor","focus":"1–1.5 h/day","goal":"Excel + SQL + Power BI","id":"p2"},{"area":"Bank Preparation","priority":"Minor","focus":"1 h/day","goal":"IT/ICT foundation + MCQ","id":"p3"},{"area":"Business Growth","priority":"Minor","focus":"1 h/day","goal":"Business model + sales + growth","id":"p4"}]};
+const AREA_VAR = {
+  "Spoken English":"--a-spoken","Digital Marketing":"--a-digital","Data Analyst":"--a-data",
+  "Bank Preparation":"--a-bank","Business Growth":"--a-biz"
+};
+const PALETTE = ["--a-spoken","--a-digital","--a-data","--a-bank","--a-biz"];
+const colorOf = a => `var(${AREA_VAR[a] || PALETTE[Math.abs(hash(a||"")) % PALETTE.length]})`;
+function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return h}
+const STATUS = {todo:{mark:"☐",label:"Not started"},doing:{mark:"◐",label:"In progress"},done:{mark:"☑",label:"Done"}};
+const NEXT = {todo:"doing",doing:"done",done:"todo"};
+const esc = s => String(s??"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const $ = s => document.querySelector(s);
+
+let state = load() || structuredClone(SEED);
+normalise(state);
+let day = Number(localStorage.getItem("oct26.day")) || 1;
+let view = "day";
+let filters = {q:"",area:"",status:""};
+
+function normalise(s){
+  s.rows = (s.rows||[]).map((r,i)=>({
+    id: r.id || ("r"+i+"-"+Math.random().toString(36).slice(2,7)),
+    day: Number(r.day)||1, area: r.area||"", topic: r.topic||"", task: r.task||"",
+    output: r.output||"", status: r.status in STATUS ? r.status : "todo",
+    hours: Number(r.hours)||0, notes: r.notes||""
+  }));
+  s.plan = (s.plan||[]).map((p,i)=>({id:p.id||("p"+i),area:p.area||"",priority:p.priority||"",focus:p.focus||"",goal:p.goal||""}));
+}
+
+/* ---------------- storage ---------------- */
+const LS = "oct26.tracker.v1";
+function load(){ try{ const raw = localStorage.getItem(LS); return raw ? JSON.parse(raw) : null; }catch(e){ return null } }
+let remote = null, timer = null;
+function setSaved(mode,text){ const el=$("#saved"); el.className="saved"+(mode?" "+mode:""); $("#savedText").textContent=text; }
+function save(){
+  try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){}
+  setSaved("pending","Saving…");
+  clearTimeout(timer);
+  timer = setTimeout(async ()=>{
+    if(!remote){ setSaved("","Saved on this device"); return; }
+    try{ await remote.set({updated:Date.now(), rows:state.rows, plan:state.plan}); setSaved("","Saved"); }
+    catch(e){ setSaved("off","Saved on this device only"); }
+  }, 700);
+}
+(async function connect(){
+  let claudeApi = null;
+  for(let i=0;i<40 && !claudeApi;i++){
+    if(typeof window.claude?.use === "function") claudeApi = window.claude;
+    else await new Promise(r=>setTimeout(r,150));
+  }
+  if(!claudeApi) return setSaved("","Saved on this device");
+  try{
+    const db = await claudeApi.use("db");
+    if(!db) return setSaved("","Saved on this device");
+    remote = db.doc("tracker/october-2026");
+    const snap = await remote.get();
+    const data = snap && snap.exists ? snap.data() : null;
+    if(data && Array.isArray(data.rows) && data.rows.length){
+      state = {rows:data.rows, plan:data.plan||state.plan};
+      normalise(state);
+      localStorage.setItem(LS, JSON.stringify(state));
+      render();
+    } else {
+      await remote.set({updated:Date.now(), rows:state.rows, plan:state.plan});
+    }
+    setSaved("","Saved");
+  }catch(e){ setSaved("","Saved on this device"); }
+  try{
+    const dl = await claudeApi.use("downloads");
+    if(dl){ $("#csvBtn").hidden = false; $("#csvBtn").onclick = ()=>exportCsv(dl); }
+  }catch(e){}
+})();
+
+/* ---------------- helpers ---------------- */
+const rowById = id => state.rows.find(r=>r.id===id);
+const days = () => { const d=[...new Set(state.rows.map(r=>r.day))].sort((a,b)=>a-b); return d.length?d:[1]; };
+
+function editable(id, field, value, ph, cls){
+  return `<div class="${cls||""}" contenteditable="plaintext-only" spellcheck="false"
+    data-id="${id}" data-f="${field}" data-ph="${esc(ph||"")}">${esc(value)}</div>`;
+}
+
+/* ---------------- stats ---------------- */
+function stats(){
+  const rows = state.rows, done = rows.filter(r=>r.status==="done");
+  const hTot = rows.reduce((s,r)=>s+(+r.hours||0),0);
+  const hDone = done.reduce((s,r)=>s+(+r.hours||0),0);
+  return {n:rows.length, done:done.length, pct: rows.length? Math.round(done.length/rows.length*100):0, hTot, hDone};
+}
+const fmtH = n => (Math.round(n*10)/10).toString();
+function renderStats(){
+  const s = stats();
+  $("#pct").textContent = s.pct + "%";
+  $("#stat").textContent = `${s.done} of ${s.n} tasks · ${fmtH(s.hDone)} / ${fmtH(s.hTot)} h`;
+  $("#bar").style.width = s.pct + "%";
+  $("#ring").style.strokeDashoffset = (100.5 - 1.005*s.pct).toFixed(1);
+
+  const areas = [...new Set(state.rows.map(r=>r.area))];
+  $("#areabar").innerHTML = areas.map(a=>{
+    const rs = state.rows.filter(r=>r.area===a), d = rs.filter(r=>r.status==="done").length;
+    const p = rs.length? Math.round(d/rs.length*100):0;
+    const off = filters.area && filters.area!==a ? " off":"";
+    return `<button class="achip${off}" data-area="${esc(a)}" style="--c:${colorOf(a)}">
+      <span class="dot"></span><span>${esc(a)}</span>
+      <span class="mini"><i style="width:${p}%"></i></span><b>${d}/${rs.length}</b></button>`;
+  }).join("");
+  const sel = $("#fArea"), cur = sel.value;
+  sel.innerHTML = `<option value="">All areas</option>` + areas.map(a=>`<option${a===cur?" selected":""}>${esc(a)}</option>`).join("");
+}
+
+/* ---------------- day view ---------------- */
+function renderDayStrip(){
+  $("#daystrip").innerHTML = days().map(d=>{
+    const rs = state.rows.filter(r=>r.day===d);
+    const pips = rs.slice(0,5).map(r=>`<i class="${r.status==="done"?"on":r.status==="doing"?"mid":""}"></i>`).join("");
+    return `<button class="daybtn" data-day="${d}" aria-current="${d===day}"><span class="d">${d}</span><span class="pips">${pips}</span></button>`;
+  }).join("");
+  const el = $(`.daybtn[data-day="${day}"]`);
+  if(el) el.scrollIntoView({inline:"center",block:"nearest"});
+}
+function renderDay(){
+  const rs = state.rows.filter(r=>r.day===day);
+  $("#dayTitle").textContent = "Day " + day;
+  const d = rs.filter(r=>r.status==="done").length;
+  const h = rs.reduce((s,r)=>s+(+r.hours||0),0);
+  $("#dayMeta").textContent = `${d} of ${rs.length} done · ${fmtH(h)} h planned`;
+  $("#cards").innerHTML = rs.length ? rs.map(r=>`
+    <article class="card${r.status==="done"?" is-done":""}" style="--c:${colorOf(r.area)}">
+      <div class="card-top">
+        <div style="min-width:0;flex:1">
+          ${editable(r.id,"area",r.area,"Area","area-name")}
+          ${editable(r.id,"topic",r.topic,"Topic","topic")}
+        </div>
+      </div>
+      <div class="fieldrow">
+        <div class="k">Task</div>${editable(r.id,"task",r.task,"What will you do?")}
+        <div class="k">Expected output</div>${editable(r.id,"output",r.output,"What will exist at the end?")}
+        <div class="k">Notes</div>${editable(r.id,"notes",r.notes,"Anything worth remembering")}
+      </div>
+      <div class="card-foot">
+        <button class="status" data-act="cycle" data-id="${r.id}" data-s="${r.status}">
+          <span class="mark">${STATUS[r.status].mark}</span>${STATUS[r.status].label}</button>
+        <label class="hrs">Hours <input type="number" step="0.5" min="0" value="${r.hours}" data-id="${r.id}" data-f="hours"></label>
+        <span class="spacer"></span>
+        <button class="icon-btn" data-act="del" data-id="${r.id}">Remove</button>
+      </div>
+    </article>`).join("")
+    : `<div class="empty">No tasks on day ${day} yet. Add one below.</div>`;
+}
+
+/* ---------------- month table ---------------- */
+function visibleRows(){
+  const q = filters.q.toLowerCase();
+  return state.rows.filter(r=>{
+    if(filters.area && r.area!==filters.area) return false;
+    if(filters.status && r.status!==filters.status) return false;
+    if(q && !(`${r.topic} ${r.task} ${r.output} ${r.notes} ${r.area}`.toLowerCase().includes(q))) return false;
+    return true;
+  }).sort((a,b)=>a.day-b.day);
+}
+function renderTable(){
+  const rs = visibleRows();
+  $("#noRows").hidden = rs.length>0;
+  $("#tbody").innerHTML = rs.map(r=>`
+    <tr class="${r.status==="done"?"done":""}">
+      <td class="c-day">${editable(r.id,"day",r.day,"")}</td>
+      <td class="c-area" style="--c:${colorOf(r.area)}"><span class="tag">${editable(r.id,"area",r.area,"Area")}</span></td>
+      <td>${editable(r.id,"topic",r.topic,"Topic")}</td>
+      <td>${editable(r.id,"task",r.task,"Task")}</td>
+      <td>${editable(r.id,"output",r.output,"Expected output")}</td>
+      <td class="c-h"><input type="number" step="0.5" min="0" value="${r.hours}" data-id="${r.id}" data-f="hours"></td>
+      <td class="c-s"><button class="tick" data-act="cycle" data-id="${r.id}" data-s="${r.status}"
+          title="${STATUS[r.status].label}">${STATUS[r.status].mark}</button></td>
+      <td>${editable(r.id,"notes",r.notes,"—")}</td>
+      <td class="c-x"><button class="del" data-act="del" data-id="${r.id}" title="Delete row">✕</button></td>
+    </tr>`).join("");
+}
+
+/* ---------------- plan ---------------- */
+function renderPlan(){
+  $("#plan").innerHTML = state.plan.map(p=>`
+    <div class="pcard" style="--c:${colorOf(p.area)}">
+      ${editable(p.id,"area",p.area,"Area","pcard-h")}
+      ${editable(p.id,"priority",p.priority,"Priority","prio")}
+      <dl>
+        <dt>Daily focus</dt><dd>${editable(p.id,"focus",p.focus,"How much time per day")}</dd>
+        <dt>October goal</dt><dd>${editable(p.id,"goal",p.goal,"What success looks like")}</dd>
+      </dl>
+      <div style="margin-top:12px"><button class="icon-btn" data-act="delplan" data-id="${p.id}">Remove</button></div>
+    </div>`).join("");
+  document.querySelectorAll(".pcard-h").forEach(el=>{
+    el.style.cssText="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;color:var(--c);letter-spacing:-.01em";
+  });
+}
+
+function render(){
+  renderStats(); renderDayStrip();
+  if(view==="day") renderDay();
+  if(view==="month") renderTable();
+  if(view==="plan") renderPlan();
+}
+
+/* ---------------- little celebration ---------------- */
+function celebrate(x,y,color){
+  const colors = [color,"var(--a-spoken)","var(--a-digital)","var(--a-data)","var(--a-bank)","var(--a-biz)"];
+  for(let i=0;i<14;i++){
+    const el = document.createElement("i");
+    el.className = "confetto";
+    const ang = Math.random()*Math.PI*2, dist = 40+Math.random()*46;
+    el.style.setProperty("--dx", (Math.cos(ang)*dist)+"px");
+    el.style.setProperty("--dy", (Math.sin(ang)*dist-18)+"px");
+    el.style.setProperty("--r", (Math.random()*360)+"deg");
+    el.style.left = x+"px"; el.style.top = y+"px";
+    el.style.background = colors[i % colors.length];
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 900);
+  }
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener("input", e=>{
+  const el = e.target;
+  const id = el.dataset.id, f = el.dataset.f;
+  if(!id || !f) return;
+  const rec = rowById(id) || state.plan.find(p=>p.id===id);
+  if(!rec) return;
+  if(f==="hours") rec.hours = Math.max(0, Number(el.value)||0);
+  else if(f==="day") rec.day = Math.max(1, parseInt(el.textContent.replace(/\D/g,""),10)||1);
+  else rec[f] = el.textContent.trim();
+  if(f==="hours"||f==="day") renderStats();
+  save();
+});
+document.addEventListener("blur", e=>{
+  const f = e.target.dataset?.f;
+  if(f==="area"||f==="day"){ render(); }
+}, true);
+
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-act], .daybtn, .achip");
+  if(!b) return;
+  if(b.classList.contains("daybtn")){ day = +b.dataset.day; localStorage.setItem("oct26.day",day); renderDayStrip(); renderDay(); return; }
+  if(b.classList.contains("achip")){
+    filters.area = filters.area===b.dataset.area ? "" : b.dataset.area;
+    $("#fArea").value = filters.area; renderStats(); if(view==="month") renderTable(); return;
+  }
+  const act = b.dataset.act, id = b.dataset.id;
+  if(act==="cycle"){
+    const r = rowById(id);
+    const becameDone = r.status!=="done" && NEXT[r.status]==="done";
+    r.status = NEXT[r.status];
+    if(becameDone){
+      const rect = b.getBoundingClientRect();
+      celebrate(rect.left+rect.width/2, rect.top+rect.height/2, colorOf(r.area));
+    }
+    save(); render();
+  }
+  if(act==="del"){
+    state.rows = state.rows.filter(r=>r.id!==id); save(); render();
+  }
+  if(act==="delplan"){
+    state.plan = state.plan.filter(p=>p.id!==id); save(); renderPlan(); 
+  }
+});
+
+$("#addDay").onclick = ()=>{
+  const last = state.rows.filter(r=>r.day===day).slice(-1)[0];
+  state.rows.push({id:"r"+Date.now(),day,area:last?last.area:"",topic:"",task:"",output:"",status:"todo",hours:1,notes:""});
+  save(); render();
+  const cards = document.querySelectorAll("#cards .card");
+  cards[cards.length-1]?.querySelector(".area-name")?.focus();
+};
+$("#addRow").onclick = ()=>{
+  const d = filters.area ? day : (days().slice(-1)[0]||1);
+  state.rows.push({id:"r"+Date.now(),day:d,area:filters.area||"",topic:"",task:"",output:"",status:"todo",hours:1,notes:""});
+  save(); render();
+  $("#tbody tr:last-child [data-f='topic']")?.focus();
+};
+$("#addPlan").onclick = ()=>{
+  state.plan.push({id:"p"+Date.now(),area:"New area",priority:"Minor",focus:"",goal:""});
+  save(); renderPlan();
+};
+
+document.querySelectorAll('[role="tab"]').forEach(t=>{
+  t.onclick = ()=>{
+    view = t.id.replace("tab-","");
+    document.querySelectorAll('[role="tab"]').forEach(x=>x.setAttribute("aria-selected", x===t));
+    $("#view-day").hidden = view!=="day";
+    $("#view-month").hidden = view!=="month";
+    $("#view-plan").hidden = view!=="plan";
+    render();
+  };
+});
+$("#q").oninput = e=>{ filters.q = e.target.value; renderTable(); };
+$("#fArea").onchange = e=>{ filters.area = e.target.value; renderStats(); renderTable(); };
+$("#fStatus").onchange = e=>{ filters.status = e.target.value; renderTable(); };
+
+$("#themeBtn").onclick = ()=>{
+  const cur = document.documentElement.getAttribute("data-theme");
+  const next = cur==="dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("oct26.theme", next);
+};
+(function(){ const t = localStorage.getItem("oct26.theme"); if(t) document.documentElement.setAttribute("data-theme", t); })();
+
+$("#resetBtn").onclick = ()=>{
+  if(!confirm("This replaces every task, hour and note with the original sheet. Continue?")) return;
+  state = structuredClone(SEED); normalise(state); save(); render();
+};
+
+function csv(){
+  const head = ["Day","Area","Topic","Task","Expected Output","Status","Target Hours","Notes"];
+  const q = v => `"${String(v??"").replace(/"/g,'""')}"`;
+  const body = [...state.rows].sort((a,b)=>a.day-b.day)
+    .map(r=>[r.day,r.area,r.topic,r.task,r.output,STATUS[r.status].label,r.hours,r.notes].map(q).join(","));
+  return "\uFEFF" + [head.map(q).join(","), ...body].join("\r\n");
+}
+async function exportCsv(dl){
+  try{ await dl.save({filename:"October_2026_Tracking.csv", data:csv()}); }
+  catch(e){ /* viewer declined */ }
+}
+
+render();
+</script>
+</body>
+</html>
