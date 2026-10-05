@@ -434,8 +434,12 @@ function renderDayStrip(){
     const pips = rs.slice(0,5).map(r=>`<i class="${r.status==="done"?"on":r.status==="doing"?"mid":""}"></i>`).join("");
     return `<button class="daybtn" data-day="${d}" aria-current="${d===day}"><span class="d">${d}</span><span class="pips">${pips}</span></button>`;
   }).join("");
-  const el = $(`.daybtn[data-day="${day}"]`);
-  if(el) el.scrollIntoView({inline:"center",block:"nearest"});
+  const strip = $("#daystrip");
+  const el = strip.querySelector(`.daybtn[data-day="${day}"]`);
+  if(el){
+    const off = el.getBoundingClientRect().left - strip.getBoundingClientRect().left + strip.scrollLeft;
+    strip.scrollLeft = off - (strip.clientWidth - el.offsetWidth) / 2;
+  }
 }
 function renderDay(){
   const rs = state.rows.filter(r=>r.day===day);
